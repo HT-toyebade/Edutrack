@@ -1,0 +1,98 @@
+{
+  "info": {
+    "name": "EduTrack Authentication Checks",
+    "description": "Manual API checks for registration, login, and JWT protected student routes. Set baseUrl and use a fresh email before running.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "testEmail", "value": "edutrack-postman@example.com" },
+    { "key": "accessToken", "value": "" },
+    { "key": "expiredToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Register student account",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"TestPassword123!\",\n  \"accountType\": \"staff\"\n}" },
+        "url": "{{baseUrl}}/users/register"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('registration succeeds', () => pm.response.to.have.status(201));",
+          "const body = pm.response.json();",
+          "pm.test('public response has no password fields', () => { pm.expect(body).not.to.have.property('password'); pm.expect(body).not.to.have.property('passwordHash'); });",
+          "pm.test('public registration cannot assign staff', () => pm.expect(body.accountType).to.eql('student'));"
+        ] }
+      }]
+    },
+    {
+      "name": "Login and save token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"TestPassword123!\"\n}" },
+        "url": "{{baseUrl}}/users/login"
+      },
+      "event": [{
+        "listen": "test",
+        "script": { "type": "text/javascript", "exec": [
+          "pm.test('login succeeds', () => pm.response.to.have.status(201));",
+          "const body = pm.response.json();",
+          "pm.test('response has Bearer token and no secrets', () => { pm.expect(body.accessToken).to.be.a('string').and.not.empty; pm.expect(body.tokenType).to.eql('Bearer'); pm.expect(body).not.to.have.property('passwordHash'); });",
+          "pm.collectionVariables.set('accessToken', body.accessToken);"
+        ] }
+      }]
+    },
+    {
+      "name": "Login rejects incorrect password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"WrongPassword123!\"\n}" },
+        "url": "{{baseUrl}}/users/login"
+      },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('incorrect credentials are rejected', () => pm.response.to.have.status(401));"
+      ] } }]
+    },
+    {
+      "name": "Protected students rejects missing token",
+      "request": { "method": "GET", "url": "{{baseUrl}}/students" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('missing token is rejected', () => pm.response.to.have.status(401));"
+      ] } }]
+    },
+    {
+      "name": "Protected students accepts valid token",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": "{{baseUrl}}/students" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('valid token grants access', () => pm.response.to.have.status(200));"
+      ] } }]
+    },
+    {
+      "name": "Protected students rejects malformed token",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer malformed.token" }], "url": "{{baseUrl}}/students" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('malformed token is rejected', () => pm.response.to.have.status(401));"
+      ] } }]
+    },
+    {
+      "name": "Protected students rejects invalid signature",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImV4cCI6NDEwMjQ0NDgwMH0.invalid" }], "url": "{{baseUrl}}/students" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('invalid signature is rejected', () => pm.response.to.have.status(401));"
+      ] } }]
+    },
+    {
+      "name": "Protected students rejects expired token",
+      "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{expiredToken}}" }], "url": "{{baseUrl}}/students" },
+      "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": [
+        "pm.test('expired token is rejected', () => pm.response.to.have.status(401));"
+      ] } }]
+    }
+  ]
+}
