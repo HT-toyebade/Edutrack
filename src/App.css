@@ -1,0 +1,241 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--surface);
+}
+
+.login-brand {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 92% 8%, rgb(91 31 255 / 42%), transparent 38%),
+    linear-gradient(145deg, var(--navy) 0%, #171044 58%, #3510a1 100%);
+  color: white;
+  padding: 52px 8%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.login-brand::after {
+  position: absolute;
+  right: -130px;
+  bottom: -180px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgb(255 255 255 / 9%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 35px rgb(255 255 255 / 3%),
+    0 0 0 70px rgb(255 255 255 / 2%);
+  content: '';
+  pointer-events: none;
+}
+
+.login-brand > * {
+  position: relative;
+  z-index: 1;
+}
+
+.brand-logo {
+  display: block;
+  height: auto;
+}
+
+.brand-logo--large {
+  width: min(100%, 300px);
+}
+
+.brand-content {
+  max-width: 480px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  color: #c8b9ff;
+}
+
+.brand-content h1 {
+  font-size: clamp(36px, 4vw, 56px);
+  line-height: 1.15;
+  margin: 20px 0;
+  letter-spacing: -1.6px;
+}
+
+.brand-content > p:last-child {
+  color: #e2def3;
+  line-height: 1.8;
+  font-size: 16px;
+}
+
+.brand-footer {
+  color: #c1bbd8;
+  font-size: 12px;
+}
+
+.login-section {
+  display: grid;
+  place-items: center;
+  padding: 32px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.login-heading h2 {
+  font-size: 32px;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.login-heading p,
+.login-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.login-card form {
+  margin-top: 36px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-bottom: 22px;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input {
+  height: 50px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0 14px;
+  outline: none;
+  background: #fff;
+  color: var(--text);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgb(75 0 232 / 10%);
+}
+
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  width: 100%;
+  padding-right: 48px;
+}
+
+.password-visibility-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--muted);
+  transform: translateY(-50%);
+}
+
+.password-visibility-button:hover {
+  background: var(--background);
+  color: var(--primary);
+}
+
+.password-visibility-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
+.password-visibility-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.login-button {
+  width: 100%;
+  height: 50px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  margin-top: 8px;
+  box-shadow: 0 8px 18px rgb(75 0 232 / 20%);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.login-button:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 10px 22px rgb(57 0 184 / 25%);
+  transform: translateY(-1px);
+}
+
+.login-note {
+  text-align: center;
+  margin-top: 28px;
+}
+
+.error-message {
+  color: var(--danger);
+  font-size: 14px;
+  margin-top: 16px;
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    grid-template-columns: 1fr;
+  }
+
+  .login-brand {
+    min-height: 320px;
+    padding: 30px;
+  }
+
+  .brand-logo--large {
+    width: min(100%, 250px);
+  }
+
+  .brand-content h1 {
+    font-size: 34px;
+  }
+
+  .brand-footer {
+    margin-top: 35px;
+  }
+
+  .login-section {
+    padding: 48px 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-group input,
+  .login-button {
+    transition: none;
+  }
+}
